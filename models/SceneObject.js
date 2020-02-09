@@ -11,7 +11,7 @@ class SceneObject {
     this.height = 0;
     this.texture = null;
     this.color = '#000';
-    this.delta = 0.1;
+    this.delta = 1;
     this.solid = false;
   }
 

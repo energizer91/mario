@@ -3,6 +3,8 @@
  * @type {object}
  * @property {Number} width
  * @property {Number} height
+ * @property {Number} dt Time delta
+ * @property {Number} aspectRatio Device aspect ratio
  */
 
 var GRAVITY = -0.3;
@@ -13,17 +15,23 @@ var GRAVITY = -0.3;
 class Scene {
   /**
    *
-   * @param {HTMLCanvasElement} canvas
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {object} data
+   * @param {{textures: Map(String, CanvasImageSource)}} params
    */
-  constructor(canvas) {
-    this.ctx = canvas.getContext('2d');
+  constructor(ctx, data, params) {
+    this.ctx = ctx;
+    this.params = params;
+    this.data = data;
     this.objects = [];
-    this.player = new Player(new Point(0, 0));
+    this.player = new Player(new Point(data.player.position), params);
     this.playing = false;
     /** @type {Viewport} */
     this.viewport = {
-      width: 800,
-      height: 600
+      width: 256,
+      height: 240,
+      aspectRatio: window.devicePixelRatio,
+      dt: 0
     };
 
     this.keys = {
@@ -36,12 +44,19 @@ class Scene {
       sprint: false
     };
 
-    this.ctx.canvas.width = this.viewport.width;
-    this.ctx.canvas.height = this.viewport.height;
+    this.lastTime = 0;
 
+    this.setViewport(this.viewport.width * this.viewport.aspectRatio, this.viewport.height * this.viewport.aspectRatio);
     this.attachKeyEvents();
 
     this.render = this.render.bind(this);
+  }
+
+  setViewport(width, height) {
+    this.viewport.width = width;
+    this.viewport.height = height;
+    this.ctx.canvas.width = width;
+    this.ctx.canvas.height = height;
   }
 
   attachKeyEvents() {
@@ -106,7 +121,7 @@ class Scene {
 
   renderDebug() {
     this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-    this.ctx.fillRect(this.viewport.width - 150, 0, 150, 300);
+    this.ctx.fillRect(this.viewport.width - 150, 0, 150, 150);
     this.ctx.fillStyle = '#fff';
     this.ctx.font = "bold 16px Arial";
     if (this.keys.up) {
@@ -132,6 +147,8 @@ class Scene {
 
     this.ctx.fillText("Speed: " + this.player.speed.x.toFixed(1) + "," + this.player.speed.y.toFixed(1), this.viewport.width - 150, 60);
     this.ctx.fillText("Pos: " + this.player.position.x.toFixed(1) + "," + this.player.position.y.toFixed(1), this.viewport.width - 150, 76);
+    this.ctx.fillText("dt: " + this.viewport.dt, this.viewport.width - 150, 92);
+    this.ctx.fillText("fps: " + Math.round(1 / this.viewport.dt), this.viewport.width - 150, 108);
   }
 
   addPlayer(player) {
@@ -147,6 +164,8 @@ class Scene {
   }
 
   play() {
+    this.viewport.dt = 0;
+    this.lastTime = 0;
     this.playing = true;
     this.render();
   }
@@ -176,7 +195,11 @@ class Scene {
   }
 
   render() {
+    const now = Date.now();
+    this.viewport.dt = (now - this.lastTime) / 1000.0;
+    this.lastTime = now;
     this.ctx.clearRect(0, 0, this.viewport.width, this.viewport.height);
+    this.ctx.imageSmoothingEnabled = false;
 
     this.objects.forEach(object => {
       object.render(this.ctx, this.viewport);

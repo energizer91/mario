@@ -1,0 +1,33 @@
+{
+  "name": "Level 1",
+  "player": {
+    "name": "characters.gif",
+    "position": [0, 20]
+  },
+  "objects": [
+    {
+      "type": "grass",
+      "position": [0, 0]
+    },
+    {
+      "type": "grass",
+      "position": [20, 0]
+    },
+    {
+      "type": "grass",
+      "position": [40, 0]
+    },
+    {
+      "type": "grass",
+      "position": [60, 0]
+    },
+    {
+      "type": "grass",
+      "position": [80, 0]
+    },
+    {
+      "type": "grass",
+      "position": [100, 0]
+    }
+  ]
+}

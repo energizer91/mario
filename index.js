@@ -1,3 +1,3 @@
-const scene = new Scene(document.getElementById('viewport'));
+const game = new Game(document.getElementById('viewport'));
 
-scene.play();
+game.loadLevel('1_1');
