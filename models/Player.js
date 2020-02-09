@@ -10,7 +10,7 @@ class Player extends SceneObject {
     this.speed = new Point(0, 0);
     this.vector = new Point(0, 0);
     this.maxSpeed = new Point(MAX_WALKING_SPEED, 700);
-    this.delta = 5;
+    this.delta = 7;
     this.mirror = false;
     this.stayingSprite = new Sprite(params.textures.get("characters.gif"), {
       width: 16,
@@ -29,6 +29,24 @@ class Player extends SceneObject {
       x: 14,
       y: 44,
       frames: [13]
+    });
+    this.stoppingSprite = new Sprite(params.textures.get("characters.gif"), {
+      width: 16,
+      height: 16,
+      padding: 0,
+      zoom: 1,
+      x: 275,
+      y: 44,
+      frames: [4]
+    });
+    this.stoppingMirrorSprite = new Sprite(params.textures.get("characters.gif"), {
+      width: 16,
+      height: 16,
+      padding: 0,
+      zoom: 1,
+      x: 16,
+      y: 44,
+      frames: [9]
     });
     this.jumpingSprite = new Sprite(params.textures.get("characters.gif"), {
       width: 16,
@@ -117,10 +135,8 @@ class Player extends SceneObject {
 
     if (!this.jumping) {
       if (this.vector.x > 0) {
-        this.mirror = false;
         this.speed.x = Math.min(this.speed.x + this.delta, this.maxSpeed.x);
       } else if (this.vector.x < 0) {
-        this.mirror = true;
         this.speed.x = Math.max(this.speed.x - this.delta, -this.maxSpeed.x);
       } else {
         if (this.speed.x < 0) {
@@ -160,6 +176,12 @@ class Player extends SceneObject {
       this.position.x += this.speed.x * viewport.dt;
     }
 
+    if (this.speed.x > 0) {
+      this.mirror = false;
+    } else if (this.speed.x < 0) {
+      this.mirror = true;
+    }
+
     if (this.speed.y !== 0) {
       this.position.y += this.speed.y * viewport.dt;
     }
@@ -187,11 +209,19 @@ class Player extends SceneObject {
 
   renderWalking(ctx, x, y, speed = 0) {
     if (this.mirror) {
-      this.walkingMirrorAnimation.animate(speed);
-      this.walkingMirrorAnimation.render(ctx, x, y);
+      if (this.speed.x < 0 && this.vector.x > 0) {
+        this.stoppingMirrorSprite.render(ctx, x, y);
+      } else {
+        this.walkingMirrorAnimation.animate(speed);
+        this.walkingMirrorAnimation.render(ctx, x, y);
+      }
     } else {
-      this.walkingAnimation.animate(speed);
-      this.walkingAnimation.render(ctx, x, y);
+      if (this.speed.x > 0 && this.vector.x < 0) {
+        this.stoppingSprite.render(ctx, x, y);
+      } else {
+        this.walkingAnimation.animate(speed);
+        this.walkingAnimation.render(ctx, x, y);
+      }
     }
   }
 
