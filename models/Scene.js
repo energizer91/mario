@@ -214,17 +214,18 @@ class Scene {
   getCollisions() {
     const collidedBlocks = this.objects.map(object => object.physics.getCollision(this.player.physics)).filter(object => object.colliding);
 
-    const stayingBlock = collidedBlocks.find(block => block.collisions[0]);
-    // const wallBlock = collidedBlocks.find(block => block.collisions[1]);
+    const collisions = collidedBlocks.reduce((acc, item) => [
+      acc[0] || item.collisions[0],
+      acc[1] || item.collisions[1],
+      acc[2] || item.collisions[2],
+      acc[3] || item.collisions[3]
+    ], [0, 0, 0, 0]);
 
-    this.player.onGround = stayingBlock ? stayingBlock.physics.top : 0;
-    // this.player.onWall = wallBlock ? wallBlock.physics.right : 0;
+    this.player.setCollisions(...collisions);
 
     if (this.debug) {
       collidedBlocks.forEach(block => block.physics.render(this.ctx, this.viewport));
     }
-
-    // console.log(collidedBlocks);
   }
 
   renderBackground() {
@@ -251,9 +252,9 @@ class Scene {
 
     this.controlPlayer();
 
-    this.player.render(this.ctx, this.viewport);
-
     this.getCollisions();
+
+    this.player.render(this.ctx, this.viewport);
 
     if (this.debug) {
       this.renderDebug();

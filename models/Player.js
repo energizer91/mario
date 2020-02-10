@@ -11,8 +11,8 @@ class Player extends SceneObject {
     this.maxSpeed = new Point(MAX_WALKING_SPEED, MAX_JUMPING_SPEED);
     this.delta = 7;
     this.mirror = false;
-    this._onground = 0;
-    this._onwall = 0;
+    this.collisions = [0, 0, 0, 0];
+    this.colliding = false;
     this.stayingSprite = new Sprite(params.textures.get("characters.gif"), {
       width: 16,
       height: 16,
@@ -109,7 +109,7 @@ class Player extends SceneObject {
     }
 
     this.jumping = true;
-    this.setVector(this.vector.x, 1);
+    // this.setVector(this.vector.x, 1);
     this.addSpeed(this.speed.x, this.maxSpeed.y);
   }
 
@@ -121,23 +121,30 @@ class Player extends SceneObject {
     this.maxSpeed.x = Math.min(this.maxSpeed.x + this.delta, MAX_RUNNING_SPEED);
   }
 
-  get onGround() {
-    return this._onground;
-  }
-
-  set onGround(value) {
-    this._onground = value;
-  }
-
-  get onWall() {
-    return this._onwall;
-  }
-
-  set onWall(value) {
-    this._onwall = value;
+  setCollisions(top = 0, right = 0, bottom = 0, left = 0) {
+    this.colliding = Boolean(top || right || bottom || left);
+    this.collisions = [top, right, bottom, left];
   }
 
   render(ctx, viewport) {
+    if (this.colliding) {
+      if (this.collisions[0] && !this.jumping) {
+        this.speed.y = 0;
+        this.position.y = this.collisions[0];
+      } else if (this.collisions[2]) {
+        this.speed.y = 0;
+        this.position.y = this.collisions[2] - this.height;
+      }
+
+      if (this.collisions[1]) {
+        this.speed.x = 0;
+        this.position.x = this.collisions[1];
+      } else if (this.collisions[3]) {
+        this.speed.x = 0;
+        this.position.x = this.collisions[3] - this.width;
+      }
+    }
+
     // add speed by vector x
     if (this.vector.x > 0) {
       this.speed.x = Math.min(this.speed.x + this.delta, this.maxSpeed.x);
@@ -158,19 +165,21 @@ class Player extends SceneObject {
       this.speed.y = Math.max(this.speed.y - this.delta, -this.maxSpeed.y);
     }
 
-    if (this.onGround && !this.jumping) {
-      this.position.y = this.onGround;
-      this.speed.y = 0;
+    if (this.colliding && this.collisions[0]) {
       this.jumpCounter = 0;
-    } else { // gravity
+    } else {
       this.jumpCounter += viewport.dt;
       this.speed.y += GRAVITY * 100;
     }
 
-    if (this.onWall) {
-      this.speed.x = 0;
-      this.position.x = this.onWall;
-    }
+    // if (this.onGround && !this.jumping) {
+    //   this.position.y = this.onGround;
+    //   this.speed.y = 0;
+    //   this.jumpCounter = 0;
+    // } else { // gravity
+    //   this.jumpCounter += viewport.dt;
+    //   this.speed.y += GRAVITY * 100;
+    // }
 
     if (this.jumping) {
       this.jumping = false;

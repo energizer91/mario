@@ -35,11 +35,35 @@
     },
     {
       "type": "block0",
+      "position": [80, 16]
+    },
+    {
+      "type": "block0",
       "position": [96, 0]
     },
     {
       "type": "block0",
       "position": [112, 0]
+    },
+    {
+      "type": "block0",
+      "position": [128, 48]
+    },
+    {
+      "type": "block0",
+      "position": [144, 48]
+    },
+    {
+      "type": "block0",
+      "position": [128, 0]
+    },
+    {
+      "type": "block0",
+      "position": [144, 0]
+    },
+    {
+      "type": "block0",
+      "position": [144, 32]
     },
     {
       "type": "block0",

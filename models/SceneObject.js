@@ -12,6 +12,8 @@ class SceneObject {
     this.sprite = null;
     this.color = '#000';
     this.physics = new Physics(this.width, this.height);
+
+    this.physics.updatePosition(this.position.x, this.position.y);
     this.delta = 1;
     this.solid = false;
   }

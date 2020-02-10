@@ -28,7 +28,7 @@ class Physics {
   }
 
   inBetween(coordinate, start, end) {
-    return start <= coordinate && end >= coordinate;
+    return coordinate >= start && coordinate <= end;
   }
 
   /**
@@ -54,26 +54,22 @@ class Physics {
     }
 
     if (horizontalCollided) {
-      if (this.top >= physics.bottom) {
+      if (this.top >= physics.bottom && this.bottom < physics.bottom) {
         result.colliding = true;
-        result.collisions[0] = 1;
-      }
-
-      if (this.bottom >= physics.top) {
+        result.collisions[0] = this.top;
+      } else if (this.bottom <= physics.top && this.bottom > physics.bottom) {
         result.colliding = true;
-        result.collisions[2] = 1;
+        result.collisions[2] = this.bottom;
       }
     }
 
     if (verticalCollided) {
-      if (this.left >= physics.right) {
+      if (this.left <= physics.right && this.right > physics.right) {
         result.colliding = true;
-        result.collisions[3] = 1;
-      }
-
-      if (this.right >= physics.left) {
+        result.collisions[3] = this.left;
+      } else if (this.right >= physics.left && this.right < physics.right) {
         result.colliding = true;
-        result.collisions[1] = 1;
+        result.collisions[1] = this.right;
       }
     }
 
