@@ -25,12 +25,12 @@ class SceneObject {
    * @param {Viewport} viewport
    */
   render(ctx, viewport) {
-    const x = this.position.x * devicePixelRatio;
-    const y = (viewport.height - this.position.y - this.height) * devicePixelRatio;
+    const x = this.position.x;
+    const y = viewport.height - this.position.y - this.height;
 
     if (!this.sprite) {
       ctx.fillStyle = this.color;
-      ctx.fillRect(x, y, this.width, this.height);
+      ctx.fillRect(x, y, this.width * devicePixelRatio, this.height * devicePixelRatio);
     } else {
       this.sprite.render(ctx, x, y);
     }

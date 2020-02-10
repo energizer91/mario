@@ -3,7 +3,7 @@
   "player": {
     "name": "characters.gif",
     "type": "mario",
-    "position": [0, 16]
+    "position": [16, 16]
   },
   "background": {
     "color": "#3A9BFF"

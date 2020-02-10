@@ -1,5 +1,6 @@
 const MAX_WALKING_SPEED = 150;
 const MAX_RUNNING_SPEED = 200;
+const MAX_JUMPING_SPEED = 500;
 const GROUND_LEVEL = 16;
 
 class Player extends SceneObject {
@@ -8,7 +9,7 @@ class Player extends SceneObject {
     this.color = '#ff0000';
     this.speed = new Point(0, 0);
     this.vector = new Point(0, 0);
-    this.maxSpeed = new Point(MAX_WALKING_SPEED, 700);
+    this.maxSpeed = new Point(MAX_WALKING_SPEED, MAX_JUMPING_SPEED);
     this.delta = 7;
     this.mirror = false;
     this.stayingSprite = new Sprite(params.textures.get("characters.gif"), {
@@ -118,6 +119,12 @@ class Player extends SceneObject {
   }
 
   render(ctx, viewport) {
+    // gravity
+    if (this.speed.y !== 0) {
+      this.speed.y += GRAVITY * 100;
+    }
+
+    // add speed by vector x
     if (this.vector.x > 0) {
       this.speed.x = Math.min(this.speed.x + this.delta, this.maxSpeed.x);
     } else if (this.vector.x < 0) {
@@ -130,8 +137,11 @@ class Player extends SceneObject {
       }
     }
 
-    if (this.speed.y !== 0) {
-      this.speed.y += GRAVITY * 100;
+    // add speed by vector y
+    if (this.vector.y > 0) {
+      this.speed.y = Math.min(this.speed.y + this.delta, this.maxSpeed.y);
+    } else if (this.vector.y < 0) {
+      this.speed.y = Math.max(this.speed.y - this.delta, -this.maxSpeed.y);
     }
 
     if (this.onGround()) {
@@ -156,11 +166,6 @@ class Player extends SceneObject {
       this.position.x = 0;
     }
 
-    if (this.position.y > viewport.height) {
-      this.speed.y = 0;
-      this.position.y = viewport.height;
-    }
-
     // setting acceleration
     if (this.speed.x !== 0) {
       this.position.x += this.speed.x * viewport.dt;
@@ -182,8 +187,8 @@ class Player extends SceneObject {
   }
 
   renderSprites(ctx, viewport) {
-    const x = this.position.x * devicePixelRatio;
-    const y = (viewport.height - this.position.y - this.height) * devicePixelRatio;
+    const x = this.position.x;
+    const y = viewport.height - this.position.y - this.height;
 
     if (this.jumping) {
       this.renderJumping(ctx, x, y);

@@ -66,8 +66,8 @@ class Sprite {
       sy,
       this.width,
       this.height,
-      x,
-      y,
+      x * devicePixelRatio,
+      y * devicePixelRatio,
       this.width * this.zoom * devicePixelRatio,
       this.height * this.zoom * devicePixelRatio
     );
