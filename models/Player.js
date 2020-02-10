@@ -228,7 +228,7 @@ class Player extends SceneObject {
       this.mirror = true;
     }
 
-    if (this.jumping) {
+    if (this.jumpCounter > 0) {
       this.renderJumping(ctx, x, y);
     } else if (this.speed.x === 0) {
       this.renderStaying(ctx, x, y);
