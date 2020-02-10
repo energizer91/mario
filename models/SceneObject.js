@@ -11,8 +11,15 @@ class SceneObject {
     this.height = 16;
     this.sprite = null;
     this.color = '#000';
+    this.physics = new Physics(this.width, this.height);
     this.delta = 1;
     this.solid = false;
+  }
+
+  updateSize(width, height) {
+    this.width = width;
+    this.height = height;
+    this.physics.updateSize(width, height);
   }
 
   setSprite(sprite) {
@@ -27,6 +34,8 @@ class SceneObject {
   render(ctx, viewport) {
     const x = this.position.x;
     const y = viewport.height - this.position.y - this.height;
+
+    this.physics.updatePosition(this.position.x, this.position.y);
 
     if (!this.sprite) {
       ctx.fillStyle = this.color;

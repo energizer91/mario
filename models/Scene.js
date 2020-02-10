@@ -211,6 +211,22 @@ class Scene {
     }
   }
 
+  getCollisions() {
+    const collidedBlocks = this.objects.map(object => object.physics.getCollision(this.player.physics)).filter(object => object.colliding);
+
+    const stayingBlock = collidedBlocks.find(block => block.collisions[0]);
+    // const wallBlock = collidedBlocks.find(block => block.collisions[1]);
+
+    this.player.onGround = stayingBlock ? stayingBlock.physics.top : 0;
+    // this.player.onWall = wallBlock ? wallBlock.physics.right : 0;
+
+    if (this.debug) {
+      collidedBlocks.forEach(block => block.physics.render(this.ctx, this.viewport));
+    }
+
+    // console.log(collidedBlocks);
+  }
+
   renderBackground() {
     const color = this.data.background.color;
 
@@ -236,6 +252,8 @@ class Scene {
     this.controlPlayer();
 
     this.player.render(this.ctx, this.viewport);
+
+    this.getCollisions();
 
     if (this.debug) {
       this.renderDebug();

@@ -1,7 +1,6 @@
 const MAX_WALKING_SPEED = 150;
 const MAX_RUNNING_SPEED = 200;
-const MAX_JUMPING_SPEED = 500;
-const GROUND_LEVEL = 16;
+const MAX_JUMPING_SPEED = 250;
 
 class Player extends SceneObject {
   constructor(pos, params) {
@@ -12,6 +11,8 @@ class Player extends SceneObject {
     this.maxSpeed = new Point(MAX_WALKING_SPEED, MAX_JUMPING_SPEED);
     this.delta = 7;
     this.mirror = false;
+    this._onground = 0;
+    this._onwall = 0;
     this.stayingSprite = new Sprite(params.textures.get("characters.gif"), {
       width: 16,
       height: 16,
@@ -73,6 +74,7 @@ class Player extends SceneObject {
       frames: [12, 11, 10, 11]
     });
     this.jumping = false;
+    this.jumpCounter = 0;
   }
 
   addSpeed(x = 0, y = 0) {
@@ -87,14 +89,14 @@ class Player extends SceneObject {
 
   move(direction) {
     if (direction === 'right') {
-      this.setVector(1, 0);
+      this.setVector(1, this.vector.y);
     } else if (direction === 'left') {
-      this.setVector(-1, 0);
+      this.setVector(-1, this.vector.y);
     }
   }
 
   stop() {
-    this.setVector(0, 0);
+    this.setVector(0, this.vector.y);
   }
 
   jump() {
@@ -102,7 +104,12 @@ class Player extends SceneObject {
       return;
     }
 
+    if (this.jumpCounter >= 0.15) {
+      return;
+    }
+
     this.jumping = true;
+    this.setVector(this.vector.x, 1);
     this.addSpeed(this.speed.x, this.maxSpeed.y);
   }
 
@@ -114,16 +121,23 @@ class Player extends SceneObject {
     this.maxSpeed.x = Math.min(this.maxSpeed.x + this.delta, MAX_RUNNING_SPEED);
   }
 
-  onGround() {
-    return this.position.y < GROUND_LEVEL;
+  get onGround() {
+    return this._onground;
+  }
+
+  set onGround(value) {
+    this._onground = value;
+  }
+
+  get onWall() {
+    return this._onwall;
+  }
+
+  set onWall(value) {
+    this._onwall = value;
   }
 
   render(ctx, viewport) {
-    // gravity
-    if (this.speed.y !== 0) {
-      this.speed.y += GRAVITY * 100;
-    }
-
     // add speed by vector x
     if (this.vector.x > 0) {
       this.speed.x = Math.min(this.speed.x + this.delta, this.maxSpeed.x);
@@ -144,9 +158,21 @@ class Player extends SceneObject {
       this.speed.y = Math.max(this.speed.y - this.delta, -this.maxSpeed.y);
     }
 
-    if (this.onGround()) {
-      this.position.y = GROUND_LEVEL;
+    if (this.onGround && !this.jumping) {
+      this.position.y = this.onGround;
       this.speed.y = 0;
+      this.jumpCounter = 0;
+    } else { // gravity
+      this.jumpCounter += viewport.dt;
+      this.speed.y += GRAVITY * 100;
+    }
+
+    if (this.onWall) {
+      this.speed.x = 0;
+      this.position.x = this.onWall;
+    }
+
+    if (this.jumping) {
       this.jumping = false;
     }
 
@@ -175,12 +201,8 @@ class Player extends SceneObject {
       this.position.y += this.speed.y * viewport.dt;
     }
 
-    // mirroring sprites if goes backwards
-    if (this.speed.x > 0) {
-      this.mirror = false;
-    } else if (this.speed.x < 0) {
-      this.mirror = true;
-    }
+    // updating physics model position for calculation collisions
+    this.physics.updatePosition(this.position.x, this.position.y);
 
     // rendering sprites
     this.renderSprites(ctx, viewport);
@@ -189,6 +211,13 @@ class Player extends SceneObject {
   renderSprites(ctx, viewport) {
     const x = this.position.x;
     const y = viewport.height - this.position.y - this.height;
+
+    // mirroring sprites if goes backwards
+    if (this.speed.x > 0) {
+      this.mirror = false;
+    } else if (this.speed.x < 0) {
+      this.mirror = true;
+    }
 
     if (this.jumping) {
       this.renderJumping(ctx, x, y);

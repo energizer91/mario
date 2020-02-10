@@ -43,14 +43,6 @@
     },
     {
       "type": "block0",
-      "position": [128, 0]
-    },
-    {
-      "type": "block0",
-      "position": [144, 0]
-    },
-    {
-      "type": "block0",
       "position": [160, 0]
     },
     {
@@ -72,6 +64,18 @@
     {
       "type": "block0",
       "position": [240, 0]
+    },
+    {
+      "type": "block0",
+      "position": [224, 16]
+    },
+    {
+      "type": "block0",
+      "position": [240, 16]
+    },
+    {
+      "type": "block0",
+      "position": [240, 32]
     }
   ]
 }
