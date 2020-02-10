@@ -7,12 +7,16 @@ class SceneObject {
   constructor(name, pos) {
     this.name = name;
     this.position = pos;
-    this.width = 0;
-    this.height = 0;
-    this.texture = null;
+    this.width = 16;
+    this.height = 16;
+    this.sprite = null;
     this.color = '#000';
     this.delta = 1;
     this.solid = false;
+  }
+
+  setSprite(sprite) {
+    this.sprite = sprite;
   }
 
   /**
@@ -21,6 +25,14 @@ class SceneObject {
    * @param {Viewport} viewport
    */
   render(ctx, viewport) {
-    // do nothing
+    const x = this.position.x * devicePixelRatio;
+    const y = (viewport.height - this.position.y - this.height) * devicePixelRatio;
+
+    if (!this.sprite) {
+      ctx.fillStyle = this.color;
+      ctx.fillRect(x, y, this.width, this.height);
+    } else {
+      this.sprite.render(ctx, x, y);
+    }
   }
 }

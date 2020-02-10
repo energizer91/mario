@@ -1,11 +1,10 @@
 const MAX_WALKING_SPEED = 150;
 const MAX_RUNNING_SPEED = 200;
+const GROUND_LEVEL = 16;
 
 class Player extends SceneObject {
   constructor(pos, params) {
     super('Player', pos);
-    this.width = 16 * devicePixelRatio;
-    this.height = 16 * devicePixelRatio;
     this.color = '#ff0000';
     this.speed = new Point(0, 0);
     this.vector = new Point(0, 0);
@@ -15,8 +14,6 @@ class Player extends SceneObject {
     this.stayingSprite = new Sprite(params.textures.get("characters.gif"), {
       width: 16,
       height: 16,
-      padding: 0,
-      zoom: 1,
       x: 275,
       y: 44,
       frames: [0]
@@ -33,8 +30,6 @@ class Player extends SceneObject {
     this.stoppingSprite = new Sprite(params.textures.get("characters.gif"), {
       width: 16,
       height: 16,
-      padding: 0,
-      zoom: 1,
       x: 275,
       y: 44,
       frames: [4]
@@ -42,8 +37,6 @@ class Player extends SceneObject {
     this.stoppingMirrorSprite = new Sprite(params.textures.get("characters.gif"), {
       width: 16,
       height: 16,
-      padding: 0,
-      zoom: 1,
       x: 16,
       y: 44,
       frames: [9]
@@ -51,8 +44,6 @@ class Player extends SceneObject {
     this.jumpingSprite = new Sprite(params.textures.get("characters.gif"), {
       width: 16,
       height: 16,
-      padding: 0,
-      zoom: 1,
       x: 274,
       y: 44,
       frames: [5]
@@ -62,15 +53,13 @@ class Player extends SceneObject {
       height: 16,
       padding: 0,
       zoom: 1,
-      x: 16,
+      x: 13,
       y: 44,
       frames: [8]
     });
     this.walkingAnimation = new Sprite(params.textures.get("characters.gif"), {
       width: 16,
       height: 16,
-      padding: 0,
-      zoom: 1,
       x: 273,
       y: 44,
       frames: [1, 2, 3, 2]
@@ -78,8 +67,6 @@ class Player extends SceneObject {
     this.walkingMirrorAnimation = new Sprite(params.textures.get("characters.gif"), {
       width: 16,
       height: 16,
-      padding: 0,
-      zoom: 1,
       x: 16,
       y: 44,
       frames: [12, 11, 10, 11]
@@ -127,23 +114,19 @@ class Player extends SceneObject {
   }
 
   onGround() {
-    return this.position.y < 0;
+    return this.position.y < GROUND_LEVEL;
   }
 
   render(ctx, viewport) {
-    super.render(ctx, viewport);
-
-    if (!this.jumping) {
-      if (this.vector.x > 0) {
-        this.speed.x = Math.min(this.speed.x + this.delta, this.maxSpeed.x);
-      } else if (this.vector.x < 0) {
-        this.speed.x = Math.max(this.speed.x - this.delta, -this.maxSpeed.x);
-      } else {
-        if (this.speed.x < 0) {
-          this.speed.x = Math.min(this.speed.x + this.delta, 0);
-        } else if (this.speed.x > 0) {
-          this.speed.x = Math.max(this.speed.x - this.delta, 0);
-        }
+    if (this.vector.x > 0) {
+      this.speed.x = Math.min(this.speed.x + this.delta, this.maxSpeed.x);
+    } else if (this.vector.x < 0) {
+      this.speed.x = Math.max(this.speed.x - this.delta, -this.maxSpeed.x);
+    } else if (!this.jumping) {
+      if (this.speed.x < 0) {
+        this.speed.x = Math.min(this.speed.x + this.delta, 0);
+      } else if (this.speed.x > 0) {
+        this.speed.x = Math.max(this.speed.x - this.delta, 0);
       }
     }
 
@@ -152,9 +135,15 @@ class Player extends SceneObject {
     }
 
     if (this.onGround()) {
-      this.position.y = 0;
+      this.position.y = GROUND_LEVEL;
       this.speed.y = 0;
       this.jumping = false;
+    }
+
+    // set boundaries
+    if (this.position.x + this.width > viewport.width) {
+      this.speed.x = 0;
+      this.position.x = viewport.width - this.width;
     }
 
     if (this.position.y > viewport.height) {
@@ -167,36 +156,34 @@ class Player extends SceneObject {
       this.position.x = 0;
     }
 
-    if (this.position.x + this.width > viewport.width) {
-      this.speed.x = 0;
-      this.position.x = viewport.width - this.width;
+    if (this.position.y > viewport.height) {
+      this.speed.y = 0;
+      this.position.y = viewport.height;
     }
 
+    // setting acceleration
     if (this.speed.x !== 0) {
       this.position.x += this.speed.x * viewport.dt;
-    }
-
-    if (this.speed.x > 0) {
-      this.mirror = false;
-    } else if (this.speed.x < 0) {
-      this.mirror = true;
     }
 
     if (this.speed.y !== 0) {
       this.position.y += this.speed.y * viewport.dt;
     }
 
-    if (this.position.y > viewport.height) {
-      this.speed.y = 0;
-      this.position.y = viewport.height;
+    // mirroring sprites if goes backwards
+    if (this.speed.x > 0) {
+      this.mirror = false;
+    } else if (this.speed.x < 0) {
+      this.mirror = true;
     }
 
+    // rendering sprites
     this.renderSprites(ctx, viewport);
   }
 
   renderSprites(ctx, viewport) {
-    const x = this.position.x;
-    const y = viewport.height - this.position.y - this.height;
+    const x = this.position.x * devicePixelRatio;
+    const y = (viewport.height - this.position.y - this.height) * devicePixelRatio;
 
     if (this.jumping) {
       this.renderJumping(ctx, x, y);

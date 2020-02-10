@@ -2,32 +2,76 @@
   "name": "Level 1",
   "player": {
     "name": "characters.gif",
-    "position": [0, 20]
+    "type": "mario",
+    "position": [0, 16]
+  },
+  "background": {
+    "color": "#3A9BFF"
   },
   "objects": [
     {
-      "type": "grass",
+      "type": "block0",
       "position": [0, 0]
     },
     {
-      "type": "grass",
-      "position": [20, 0]
+      "type": "block0",
+      "position": [16, 0]
     },
     {
-      "type": "grass",
-      "position": [40, 0]
+      "type": "block0",
+      "position": [32, 0]
     },
     {
-      "type": "grass",
-      "position": [60, 0]
+      "type": "block0",
+      "position": [48, 0]
     },
     {
-      "type": "grass",
+      "type": "block0",
+      "position": [64, 0]
+    },
+    {
+      "type": "block0",
       "position": [80, 0]
     },
     {
-      "type": "grass",
-      "position": [100, 0]
+      "type": "block0",
+      "position": [96, 0]
+    },
+    {
+      "type": "block0",
+      "position": [112, 0]
+    },
+    {
+      "type": "block0",
+      "position": [128, 0]
+    },
+    {
+      "type": "block0",
+      "position": [144, 0]
+    },
+    {
+      "type": "block0",
+      "position": [160, 0]
+    },
+    {
+      "type": "block0",
+      "position": [176, 0]
+    },
+    {
+      "type": "block0",
+      "position": [192, 0]
+    },
+    {
+      "type": "block0",
+      "position": [208, 0]
+    },
+    {
+      "type": "block0",
+      "position": [224, 0]
+    },
+    {
+      "type": "block0",
+      "position": [240, 0]
     }
   ]
 }

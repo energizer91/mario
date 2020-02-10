@@ -1,0 +1,25 @@
+{
+  "sets": {
+    "tiles": {
+      "file": "tiles.png",
+      "width": 16,
+      "height": 16,
+      "grid": [29, 28]
+    },
+    "characters": {
+      "file": "characters.gif",
+      "width": 16,
+      "height": 16,
+      "grid": [29, 28]
+    }
+  },
+  "tiles": {
+    "block0": {
+      "set": "tiles",
+      "frames": [0]
+    },
+    "mario": {
+      "set": "characters"
+    }
+  }
+}

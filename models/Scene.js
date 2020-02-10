@@ -17,7 +17,7 @@ class Scene {
    *
    * @param {CanvasRenderingContext2D} ctx
    * @param {object} data
-   * @param {{textures: Map(String, CanvasImageSource)}} params
+   * @param {{textures: Map(String, CanvasImageSource), tiles: Object[]}} params
    */
   constructor(ctx, data, params) {
     this.ctx = ctx;
@@ -25,6 +25,7 @@ class Scene {
     this.data = data;
     this.objects = [];
     this.player = new Player(new Point(data.player.position), params);
+    this.debug = false;
     this.playing = false;
     /** @type {Viewport} */
     this.viewport = {
@@ -48,13 +49,12 @@ class Scene {
 
     this.setViewport(this.viewport.width * this.viewport.aspectRatio, this.viewport.height * this.viewport.aspectRatio);
     this.attachKeyEvents();
+    this.loadObjects();
 
     this.render = this.render.bind(this);
   }
 
   setViewport(width, height) {
-    this.viewport.width = width;
-    this.viewport.height = height;
     this.ctx.canvas.width = width;
     this.ctx.canvas.height = height;
   }
@@ -85,6 +85,9 @@ class Scene {
           break;
         case 'ShiftLeft':
           this.keys.sprint = true;
+          break;
+        case 'KeyD':
+          this.debug = !this.debug;
           break;
       }
     });
@@ -117,6 +120,20 @@ class Scene {
           break;
       }
     });
+  }
+
+  loadObjects() {
+    this.objects = this.data.objects.map(object => {
+      const {set, ...params} = this.params.tiles.tiles[object.type];
+      const {file, ...tile} = {
+        ...this.params.tiles.sets[set],
+        ...params
+      };
+      const obj = new SceneObject(object.type, new Point(object.position));
+      obj.setSprite(new Sprite(this.params.textures.get(file), tile));
+
+      return obj;
+    })
   }
 
   renderDebug() {
@@ -194,11 +211,22 @@ class Scene {
     }
   }
 
+  renderBackground() {
+    const color = this.data.background.color;
+
+    if (color) {
+      this.ctx.fillStyle = color;
+      this.ctx.fillRect(0, 0, this.viewport.width * devicePixelRatio, this.viewport.height * devicePixelRatio);
+    } else {
+      this.ctx.clearRect(0, 0, this.viewport.width * devicePixelRatio, this.viewport.height * devicePixelRatio);
+    }
+  }
+
   render() {
     const now = Date.now();
     this.viewport.dt = (now - this.lastTime) / 1000.0;
     this.lastTime = now;
-    this.ctx.clearRect(0, 0, this.viewport.width, this.viewport.height);
+    this.renderBackground();
     this.ctx.imageSmoothingEnabled = false;
 
     this.objects.forEach(object => {
@@ -209,7 +237,9 @@ class Scene {
 
     this.player.render(this.ctx, this.viewport);
 
-    this.renderDebug();
+    if (this.debug) {
+      this.renderDebug();
+    }
 
     if (this.playing) {
       requestAnimationFrame(this.render);

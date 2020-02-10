@@ -8,6 +8,8 @@
  * @property {Number} y
  * @property {Number} zoom
  * @property {Number} padding
+ * @property {boolean} autoplay
+ * @property {Number} speed
  */
 
 class Sprite {
@@ -20,11 +22,13 @@ class Sprite {
     this.image = image;
     this.width = config.width;
     this.height = config.height;
-    this.frames = config.frames;
-    this.x = config.x;
-    this.y = config.y;
-    this.zoom = config.zoom;
-    this.padding = config.padding;
+    this.frames = config.frames || [];
+    this.x = config.x || 0;
+    this.y = config.y || 0;
+    this.zoom = config.zoom || 1;
+    this.padding = config.padding || 0;
+    this.autoplay = config.autoplay || false;
+    this.speed = config.speed || 0;
     this.index = 0;
   }
 
@@ -47,8 +51,13 @@ class Sprite {
    * @param {Number} y
    */
   render(ctx, x, y) {
+    if (this.autoplay) {
+      this.animate(this.speed);
+    }
+
     const index = Math.floor(this.index);
-    const sx = this.x + this.frames[index] * (this.width + this.padding);
+    const currentFrame = !this.frames.length ? 0 : this.frames[index];
+    const sx = this.x + currentFrame * (this.width + this.padding);
     const sy = this.y;
 
     ctx.drawImage(
@@ -60,7 +69,7 @@ class Sprite {
       x,
       y,
       this.width * this.zoom * devicePixelRatio,
-      this.height * this.zoom * devicePixelRatio,
+      this.height * this.zoom * devicePixelRatio
     );
   }
 }

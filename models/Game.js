@@ -1,3 +1,6 @@
+// make array of unique elements by creating an unique set and transforming to array
+const unique = elements => Array.from(new Set(elements));
+
 class Game {
   /**
    * Game constructor
@@ -9,30 +12,42 @@ class Game {
     this.levelData = null;
     this.scene = null;
     this.textures = new Map();
+    this.tiles = null;
   }
 
-  loadLevel(name) {
-    fetch(`levels/${name}.json`)
-      .then(response => response.json())
-      .then(data => {
-        this.level = name;
-        this.levelData = data;
+  async loadLevel(name) {
+    if (!this.tiles) {
+      this.tiles = await this.loadTiles();
+    }
 
-        const resources = [data.player.name];
+    const response = await fetch(`levels/${name}.json`);
+    const data = await response.json();
 
-        return this.loadResources(resources);
-      })
-      .then(() => {
-        this.createScene();
-        this.scene.play();
-      })
+    this.level = name;
+    this.levelData = data;
+
+    const tiles = unique([data.player.type, ...data.objects.map(object => object.type)]);
+    const resources = unique(tiles.map(tile => this.tiles.sets[this.tiles.tiles[tile].set].file));
+
+    await this.loadResources(resources);
+
+    this.createScene();
+    this.scene.play();
   }
 
   createScene() {
     this.scene = new Scene(this.ctx, this.levelData, {
-      textures: this.textures
+      textures: this.textures,
+      tiles: this.tiles
     });
   }
+
+  loadTiles() {
+    fetch(`data/tiles.json`)
+      .then(response => response.json())
+      .then(data => this.tiles = data);
+  }
+
 
   loadResources(urls) {
     return Promise.all(urls.filter(url => !this.textures.has(url)).map(url => this.loadTexture(url)))
