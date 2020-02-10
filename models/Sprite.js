@@ -10,6 +10,7 @@
  * @property {Number} padding
  * @property {boolean} autoplay
  * @property {Number} speed
+ * @property {Number[]} grid
  */
 
 class Sprite {
@@ -29,13 +30,14 @@ class Sprite {
     this.padding = config.padding || 0;
     this.autoplay = config.autoplay || false;
     this.speed = config.speed || 0;
+    this.grid = config.grid || [Infinity, Infinity];
     this.index = 0;
   }
 
   animate(speed = 0) {
     this.index += Math.abs(speed);
 
-    if (this.index >= this.frames.length - 1) {
+    if (this.index >= this.frames.length) {
       this.index = 0;
     }
   }
@@ -55,10 +57,17 @@ class Sprite {
       this.animate(this.speed);
     }
 
-    const index = Math.floor(this.index);
-    const currentFrame = !this.frames.length ? 0 : this.frames[index];
+    const xIndex = Math.floor(this.index);
+    let currentFrame = !this.frames.length ? 0 : this.frames[xIndex];
+    let yOffset = 0;
+
+    if (currentFrame > this.grid[0]) {
+      yOffset += Math.floor(currentFrame / this.grid[0]);
+      currentFrame = currentFrame % this.grid[0];
+    }
+
     const sx = this.x + currentFrame * (this.width + this.padding);
-    const sy = this.y;
+    const sy = this.y + this.height * yOffset;
 
     ctx.drawImage(
       this.image,

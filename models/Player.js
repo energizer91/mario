@@ -1,6 +1,6 @@
 const MAX_WALKING_SPEED = 150;
 const MAX_RUNNING_SPEED = 200;
-const MAX_JUMPING_SPEED = 250;
+const MAX_JUMPING_SPEED = 320;
 
 class Player extends SceneObject {
   constructor(pos, params) {
@@ -186,10 +186,10 @@ class Player extends SceneObject {
     }
 
     // set boundaries
-    if (this.position.x + this.width > viewport.width) {
-      this.speed.x = 0;
-      this.position.x = viewport.width - this.width;
-    }
+    // if (this.position.x + this.width > viewport.width) {
+    //   this.speed.x = 0;
+    //   this.position.x = viewport.width - this.width;
+    // }
 
     if (this.position.y > viewport.height) {
       this.speed.y = 0;
@@ -218,7 +218,7 @@ class Player extends SceneObject {
   }
 
   renderSprites(ctx, viewport) {
-    const x = this.position.x;
+    const x = this.position.x  - viewport.offset;
     const y = viewport.height - this.position.y - this.height;
 
     // mirroring sprites if goes backwards

@@ -85,7 +85,7 @@ class Physics {
     ctx.strokeStyle = "#0f0";
     ctx.lineWidth = 2 * devicePixelRatio;
 
-    const startX = this.left;
+    const startX = this.left - viewport.offset;
     const startY = viewport.height - this.top;
 
     ctx.beginPath();

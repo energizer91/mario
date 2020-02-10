@@ -3,14 +3,16 @@ class SceneObject {
    *
    * @param {String} name Object name
    * @param {Point} pos Position
+   * @param {object} params
    */
-  constructor(name, pos) {
+  constructor(name, pos, params = {}) {
     this.name = name;
     this.position = pos;
     this.width = 16;
     this.height = 16;
     this.sprite = null;
     this.color = '#000';
+    this.transparent = params.transparent;
     this.physics = new Physics(this.width, this.height);
 
     this.physics.updatePosition(this.position.x, this.position.y);
@@ -34,7 +36,7 @@ class SceneObject {
    * @param {Viewport} viewport
    */
   render(ctx, viewport) {
-    const x = this.position.x;
+    const x = this.position.x - viewport.offset;
     const y = viewport.height - this.position.y - this.height;
 
     this.physics.updatePosition(this.position.x, this.position.y);

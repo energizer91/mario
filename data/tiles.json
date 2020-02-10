@@ -18,6 +18,23 @@
       "set": "tiles",
       "frames": [0]
     },
+    "block1": {
+      "set": "tiles",
+      "frames": [1]
+    },
+    "question": {
+      "set": "tiles",
+      "frames": [23, 24, 25, 24],
+      "speed": 0.1,
+      "autoplay": true
+    },
+    "tube": {
+      "set": "tiles"
+    },
+    "grass": {
+      "set": "tiles",
+      "transparent": true
+    },
     "mario": {
       "set": "characters"
     }

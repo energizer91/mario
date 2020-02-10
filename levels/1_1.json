@@ -10,6 +10,51 @@
   },
   "objects": [
     {
+      "type": "grass",
+      "position": [0, 16],
+      "frames": [240]
+    },
+    {
+      "type": "grass",
+      "position": [16, 16],
+      "frames": [269]
+    },
+    {
+      "type": "grass",
+      "position": [32, 16],
+      "frames": [270]
+    },
+    {
+      "type": "grass",
+      "position": [48, 16],
+      "frames": [271]
+    },
+    {
+      "type": "grass",
+      "position": [64, 16],
+      "frames": [242]
+    },
+    {
+      "type": "grass",
+      "position": [16, 32],
+      "frames": [240]
+    },
+    {
+      "type": "grass",
+      "position": [32, 32],
+      "frames": [270]
+    },
+    {
+      "type": "grass",
+      "position": [48, 32],
+      "frames": [242]
+    },
+    {
+      "type": "grass",
+      "position": [32, 48],
+      "frames": [241]
+    },
+    {
       "type": "block0",
       "position": [0, 0]
     },
@@ -35,7 +80,7 @@
     },
     {
       "type": "block0",
-      "position": [80, 16]
+      "position": [90, 0]
     },
     {
       "type": "block0",
@@ -47,23 +92,11 @@
     },
     {
       "type": "block0",
-      "position": [128, 48]
-    },
-    {
-      "type": "block0",
-      "position": [144, 48]
-    },
-    {
-      "type": "block0",
       "position": [128, 0]
     },
     {
       "type": "block0",
       "position": [144, 0]
-    },
-    {
-      "type": "block0",
-      "position": [144, 32]
     },
     {
       "type": "block0",
@@ -91,15 +124,156 @@
     },
     {
       "type": "block0",
-      "position": [224, 16]
+      "position": [256, 0]
+    },
+    {
+      "type": "question",
+      "position": [256, 64]
     },
     {
       "type": "block0",
-      "position": [240, 16]
+      "position": [272, 0]
     },
     {
       "type": "block0",
-      "position": [240, 32]
+      "position": [288, 0]
+    },
+    {
+      "type": "block0",
+      "position": [304, 0]
+    },
+    {
+      "type": "block0",
+      "position": [320, 0]
+    },
+    {
+      "type": "block0",
+      "position": [336, 0]
+    },
+    {
+      "type": "block0",
+      "position": [352, 0]
+    },
+    {
+      "type": "block1",
+      "position": [320, 64]
+    },
+    {
+      "type": "block1",
+      "position": [336, 64]
+    },
+    {
+      "type": "block1",
+      "position": [352, 64]
+    },
+    {
+      "type": "block0",
+      "position": [368, 0]
+    },
+    {
+      "type": "block0",
+      "position": [384, 0]
+    },
+    {
+      "type": "block0",
+      "position": [400, 0]
+    },
+    {
+      "type": "block0",
+      "position": [416, 0]
+    },
+    {
+      "type": "block0",
+      "position": [432, 0]
+    },
+    {
+      "type": "tube",
+      "position": [416, 16],
+      "frames": [261]
+    },
+    {
+      "type": "tube",
+      "position": [432, 16],
+      "frames": [262]
+    },
+    {
+      "type": "tube",
+      "position": [416, 32],
+      "frames": [290]
+    },
+    {
+      "type": "tube",
+      "position": [432, 32],
+      "frames": [291]
+    },{
+      "type": "block0",
+      "position": [448, 0]
+    },
+    {
+      "type": "block0",
+      "position": [464, 0]
+    },
+    {
+      "type": "block0",
+      "position": [480, 0]
+    },
+    {
+      "type": "block0",
+      "position": [496, 0]
+    },
+    {
+      "type": "block0",
+      "position": [512, 0]
+    },
+    {
+      "type": "block0",
+      "position": [528, 0]
+    },
+    {
+      "type": "block0",
+      "position": [544, 0]
+    },
+    {
+      "type": "block0",
+      "position": [560, 0]
+    },
+    {
+      "type": "block0",
+      "position": [576, 0]
+    },
+    {
+      "type": "block0",
+      "position": [592, 0]
+    },
+    {
+      "type": "tube",
+      "position": [576, 16],
+      "frames": [261]
+    },
+    {
+      "type": "tube",
+      "position": [592, 16],
+      "frames": [262]
+    },
+    {
+      "type": "tube",
+      "position": [576, 32],
+      "frames": [261]
+    },
+    {
+      "type": "tube",
+      "position": [592, 32],
+      "frames": [262]
+    },
+    {
+      "type": "tube",
+      "position": [576, 48],
+      "frames": [290]
+    },
+    {
+      "type": "tube",
+      "position": [592, 48],
+      "frames": [291]
     }
   ]
 }

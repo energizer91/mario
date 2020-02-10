@@ -4,6 +4,7 @@
  * @property {Number} width
  * @property {Number} height
  * @property {Number} dt Time delta
+ * @property {Number} offset Viewport offset
  * @property {Number} aspectRatio Device aspect ratio
  */
 
@@ -32,6 +33,7 @@ class Scene {
       width: 256,
       height: 240,
       aspectRatio: window.devicePixelRatio,
+      offset: 0,
       dt: 0
     };
 
@@ -124,12 +126,14 @@ class Scene {
 
   loadObjects() {
     this.objects = this.data.objects.map(object => {
-      const {set, ...params} = this.params.tiles.tiles[object.type];
+      const {type, position, ...rest} = object;
+      const {set, ...params} = this.params.tiles.tiles[type];
       const {file, ...tile} = {
         ...this.params.tiles.sets[set],
-        ...params
+        ...params,
+        ...rest
       };
-      const obj = new SceneObject(object.type, new Point(object.position));
+      const obj = new SceneObject(type, new Point(position), tile);
       obj.setSprite(new Sprite(this.params.textures.get(file), tile));
 
       return obj;
@@ -212,7 +216,10 @@ class Scene {
   }
 
   getCollisions() {
-    const collidedBlocks = this.objects.map(object => object.physics.getCollision(this.player.physics)).filter(object => object.colliding);
+    const collidedBlocks = this.objects
+      .filter(object => !object.transparent)
+      .map(object => object.physics.getCollision(this.player.physics))
+      .filter(object => object.colliding);
 
     const collisions = collidedBlocks.reduce((acc, item) => [
       acc[0] || item.collisions[0],
@@ -247,7 +254,9 @@ class Scene {
     this.ctx.imageSmoothingEnabled = false;
 
     this.objects.forEach(object => {
-      object.render(this.ctx, this.viewport);
+      if (object.position.x >= this.viewport.offset || object.position.x <= this.viewport.offset + this.viewport.width) {
+        object.render(this.ctx, this.viewport);
+      }
     });
 
     this.controlPlayer();
@@ -255,6 +264,11 @@ class Scene {
     this.getCollisions();
 
     this.player.render(this.ctx, this.viewport);
+
+    // move viewport after moving at half
+    if (this.player.position.x + this.player.width > this.viewport.width / 2) {
+      this.viewport.offset = this.player.position.x + this.player.width - this.viewport.width / 2
+    }
 
     if (this.debug) {
       this.renderDebug();
