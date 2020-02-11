@@ -170,6 +170,7 @@ class Scene {
     this.ctx.fillText("Pos: " + this.player.position.x.toFixed(1) + "," + this.player.position.y.toFixed(1), this.viewport.width - 150, 76);
     this.ctx.fillText("dt: " + this.viewport.dt, this.viewport.width - 150, 92);
     this.ctx.fillText("fps: " + Math.round(1 / this.viewport.dt), this.viewport.width - 150, 108);
+    this.ctx.fillText("offset: " + this.viewport.offset.toFixed(1), this.viewport.width - 150, 124);
   }
 
   addPlayer(player) {
@@ -267,7 +268,9 @@ class Scene {
 
     // move viewport after moving at half
     if (this.player.position.x + this.player.width > this.viewport.width / 2) {
-      this.viewport.offset = this.player.position.x + this.player.width - this.viewport.width / 2
+      if (this.player.position.x + this.player.width - this.viewport.width / 2 >= this.viewport.offset) {
+        this.viewport.offset = this.player.position.x + this.player.width - this.viewport.width / 2;
+      }
     }
 
     if (this.debug) {

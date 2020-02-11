@@ -1,6 +1,7 @@
-const MAX_WALKING_SPEED = 150;
+const MAX_WALKING_SPEED = 150; // pixels per second
 const MAX_RUNNING_SPEED = 200;
-const MAX_JUMPING_SPEED = 320;
+const MAX_JUMPING_SPEED = 250; // jumping force
+const MAX_JUMP_COUNTER = 0.3; // how many milliseconds you can hold jump button
 
 class Player extends SceneObject {
   constructor(pos, params) {
@@ -9,7 +10,7 @@ class Player extends SceneObject {
     this.speed = new Point(0, 0);
     this.vector = new Point(0, 0);
     this.maxSpeed = new Point(MAX_WALKING_SPEED, MAX_JUMPING_SPEED);
-    this.delta = 7;
+    this.delta = 3; // speed changing delta
     this.mirror = false;
     this.collisions = [0, 0, 0, 0];
     this.colliding = false;
@@ -104,7 +105,7 @@ class Player extends SceneObject {
       return;
     }
 
-    if (this.jumpCounter >= 0.15) {
+    if (this.jumpCounter >= MAX_JUMP_COUNTER) {
       return;
     }
 
@@ -127,7 +128,9 @@ class Player extends SceneObject {
   }
 
   render(ctx, viewport) {
+    // calculate collisions
     if (this.colliding) {
+      // y axis collisions
       if (this.collisions[0] && !this.jumping) {
         this.speed.y = 0;
         this.position.y = this.collisions[0];
@@ -136,6 +139,7 @@ class Player extends SceneObject {
         this.position.y = this.collisions[2] - this.height;
       }
 
+      // x axis collisions
       if (this.collisions[1]) {
         this.speed.x = 0;
         this.position.x = this.collisions[1];
@@ -151,6 +155,7 @@ class Player extends SceneObject {
     } else if (this.vector.x < 0) {
       this.speed.x = Math.max(this.speed.x - this.delta, -this.maxSpeed.x);
     } else if (!this.jumping) {
+      // add stopping speed
       if (this.speed.x < 0) {
         this.speed.x = Math.min(this.speed.x + this.delta, 0);
       } else if (this.speed.x > 0) {
@@ -165,21 +170,13 @@ class Player extends SceneObject {
       this.speed.y = Math.max(this.speed.y - this.delta, -this.maxSpeed.y);
     }
 
+    // counting how long i can jump
     if (this.colliding && this.collisions[0]) {
       this.jumpCounter = 0;
     } else {
       this.jumpCounter += viewport.dt;
       this.speed.y += GRAVITY * 100;
     }
-
-    // if (this.onGround && !this.jumping) {
-    //   this.position.y = this.onGround;
-    //   this.speed.y = 0;
-    //   this.jumpCounter = 0;
-    // } else { // gravity
-    //   this.jumpCounter += viewport.dt;
-    //   this.speed.y += GRAVITY * 100;
-    // }
 
     if (this.jumping) {
       this.jumping = false;
@@ -196,9 +193,9 @@ class Player extends SceneObject {
       this.position.y = viewport.height;
     }
 
-    if (this.position.x < 0) {
+    if (this.position.x < viewport.offset) {
       this.speed.x = 0;
-      this.position.x = 0;
+      this.position.x = viewport.offset;
     }
 
     // setting acceleration

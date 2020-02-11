@@ -17,7 +17,6 @@ class SceneObject {
 
     this.physics.updatePosition(this.position.x, this.position.y);
     this.delta = 1;
-    this.solid = false;
   }
 
   updateSize(width, height) {
