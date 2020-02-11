@@ -51,10 +51,11 @@ class Sprite {
    * @param {CanvasRenderingContext2D} ctx
    * @param {Number} x
    * @param {Number} y
+   * @param {Number} dt time delta
    */
-  render(ctx, x, y) {
+  render(ctx, x, y, dt) {
     if (this.autoplay) {
-      this.animate(this.speed);
+      this.animate(this.speed * dt);
     }
 
     const xIndex = Math.floor(this.index);

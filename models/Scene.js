@@ -24,11 +24,15 @@ class Scene {
     this.ctx = ctx;
     this.params = params;
     this.data = data;
+    /** @type SceneObject[] */
     this.objects = [];
+    /** @type SceneObject[] Objects with physics included */
+    this.physicsObjects = [];
     this.player = new Player(new Point(data.player.position), params);
     this.debug = false;
     this.playing = false;
-    /** @type {Viewport} */
+    this.speed = 1;
+    /** @type Viewport */
     this.viewport = {
       width: 256,
       height: 240,
@@ -173,10 +177,6 @@ class Scene {
     this.ctx.fillText("offset: " + this.viewport.offset.toFixed(1), this.viewport.width - 150, 124);
   }
 
-  addPlayer(player) {
-    this.player = player;
-  }
-
   /**
    * Adds objects to canvas
    * @param {SceneObject} object Scene object
@@ -192,8 +192,12 @@ class Scene {
     this.render();
   }
 
-  stop() {
+  pause() {
     this.playing = false;
+  }
+
+  setSpeed(speed) {
+    this.speed = speed;
   }
 
   controlPlayer() {
@@ -217,23 +221,36 @@ class Scene {
   }
 
   getCollisions() {
-    const collidedBlocks = this.objects
-      .filter(object => !object.transparent)
-      .map(object => object.physics.getCollision(this.player.physics))
-      .filter(object => object.colliding);
+    let resultCollision = [0, 0, 0, 0];
 
-    const collisions = collidedBlocks.reduce((acc, item) => [
-      acc[0] || item.collisions[0],
-      acc[1] || item.collisions[1],
-      acc[2] || item.collisions[2],
-      acc[3] || item.collisions[3]
-    ], [0, 0, 0, 0]);
+    for (let object of this.objects) {
+      if (object.transparent) {
+        continue;
+      }
 
-    this.player.setCollisions(...collisions);
+      const result = object.physics.getCollision(this.player.physics);
 
-    if (this.debug) {
-      collidedBlocks.forEach(block => block.physics.render(this.ctx, this.viewport));
+      if (!result.colliding) {
+        continue;
+      }
+
+      if (result.collisions[2]) {
+        object.shake();
+      }
+
+      resultCollision = [
+        resultCollision[0] || result.collisions[0],
+        resultCollision[1] || result.collisions[1],
+        resultCollision[2] || result.collisions[2],
+        resultCollision[3] || result.collisions[3],
+      ];
+
+      if (this.debug) {
+        object.physics.render(this.ctx, this.viewport);
+      }
     }
+
+    this.player.setCollisions(...resultCollision);
   }
 
   renderBackground() {
@@ -249,7 +266,7 @@ class Scene {
 
   render() {
     const now = Date.now();
-    this.viewport.dt = (now - this.lastTime) / 1000.0;
+    this.viewport.dt = (now - this.lastTime) / 1000.0 * this.speed;
     this.lastTime = now;
     this.renderBackground();
     this.ctx.imageSmoothingEnabled = false;

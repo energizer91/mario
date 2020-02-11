@@ -1,7 +1,7 @@
 const MAX_WALKING_SPEED = 150; // pixels per second
 const MAX_RUNNING_SPEED = 200;
-const MAX_JUMPING_SPEED = 250; // jumping force
-const MAX_JUMP_COUNTER = 0.3; // how many milliseconds you can hold jump button
+const MAX_JUMPING_SPEED = 300; // jumping force
+const MAX_JUMP_COUNTER = 0.25; // how many milliseconds you can hold jump button
 
 class Player extends SceneObject {
   constructor(pos, params) {
@@ -24,8 +24,6 @@ class Player extends SceneObject {
     this.stayingMirrorSprite = new Sprite(params.textures.get("characters.gif"), {
       width: 16,
       height: 16,
-      padding: 0,
-      zoom: 1,
       x: 14,
       y: 44,
       frames: [13]
@@ -54,8 +52,6 @@ class Player extends SceneObject {
     this.jumpingMirrorSprite = new Sprite(params.textures.get("characters.gif"), {
       width: 16,
       height: 16,
-      padding: 0,
-      zoom: 1,
       x: 13,
       y: 44,
       frames: [8]
@@ -135,6 +131,7 @@ class Player extends SceneObject {
         this.speed.y = 0;
         this.position.y = this.collisions[0];
       } else if (this.collisions[2]) {
+        this.jumpCounter = MAX_JUMP_COUNTER;
         this.speed.y = 0;
         this.position.y = this.collisions[2] - this.height;
       }
@@ -226,48 +223,48 @@ class Player extends SceneObject {
     }
 
     if (this.jumpCounter > 0) {
-      this.renderJumping(ctx, x, y);
+      this.renderJumping(ctx, x, y, viewport.dt);
     } else if (this.speed.x === 0) {
-      this.renderStaying(ctx, x, y);
+      this.renderStaying(ctx, x, y, viewport.dt);
     } else {
-      this.renderWalking(ctx, x, y, this.speed.x * viewport.dt / 10);
+      this.renderWalking(ctx, x, y, this.speed.x * viewport.dt / 10, viewport.dt);
     }
   }
 
-  renderWalking(ctx, x, y, speed = 0) {
+  renderWalking(ctx, x, y, speed = 0, dt) {
     if (this.mirror) {
       if (this.speed.x < 0 && this.vector.x > 0) {
-        this.stoppingMirrorSprite.render(ctx, x, y);
+        this.stoppingMirrorSprite.render(ctx, x, y, dt);
       } else {
         this.walkingMirrorAnimation.animate(speed);
-        this.walkingMirrorAnimation.render(ctx, x, y);
+        this.walkingMirrorAnimation.render(ctx, x, y, dt);
       }
     } else {
       if (this.speed.x > 0 && this.vector.x < 0) {
-        this.stoppingSprite.render(ctx, x, y);
+        this.stoppingSprite.render(ctx, x, y, dt);
       } else {
         this.walkingAnimation.animate(speed);
-        this.walkingAnimation.render(ctx, x, y);
+        this.walkingAnimation.render(ctx, x, y, dt);
       }
     }
   }
 
-  renderStaying(ctx, x, y) {
+  renderStaying(ctx, x, y, dt) {
     if (this.mirror) {
-      this.stayingMirrorSprite.render(ctx, x, y);
+      this.stayingMirrorSprite.render(ctx, x, y, dt);
       this.walkingMirrorAnimation.setIndex(0);
     } else {
-      this.stayingSprite.render(ctx, x, y);
+      this.stayingSprite.render(ctx, x, y, dt);
       this.walkingAnimation.setIndex(0);
     }
   }
 
-  renderJumping(ctx, x, y) {
+  renderJumping(ctx, x, y, dt) {
     if (this.mirror) {
-      this.jumpingMirrorSprite.render(ctx, x, y);
+      this.jumpingMirrorSprite.render(ctx, x, y, dt);
       this.walkingMirrorAnimation.setIndex(0);
     } else {
-      this.jumpingSprite.render(ctx, x, y);
+      this.jumpingSprite.render(ctx, x, y, dt);
       this.walkingAnimation.setIndex(0);
     }
   }
