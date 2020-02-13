@@ -31,13 +31,16 @@ class Physics {
     return coordinate >= start && coordinate <= end;
   }
 
+  intersecting(c1, c2, c3, c4) {
+    return this.inBetween(c1, c3, c4) || this.inBetween(c2, c3, c4);
+  }
+
   /**
    * Get collisions with other physics object
    * @param {Physics} physics
    * @returns {{colliding: boolean, physics: Physics, collisions: Number[]}} collisions (top, right, bottom, left)
    */
   getCollision(physics) {
-    const physicsCenter = physics.getCenter();
     const result = {
       physics: this,
       colliding: false,
@@ -46,10 +49,12 @@ class Physics {
 
     this.collisions = result.collisions;
 
-    const horizontalCollided = this.inBetween(physicsCenter.x, this.left, this.right);
-    const verticalCollided = this.inBetween(physicsCenter.y, this.bottom, this.top);
+    const horizontalGap = 2;
+    const verticalGap = 5;
+    const horizontalCollided = this.intersecting(physics.left + horizontalGap, physics.right - horizontalGap, this.left, this.right);
+    const verticalCollided = this.intersecting(physics.bottom + verticalGap, physics.top - verticalGap, this.bottom, this.top);
 
-    if (!(horizontalCollided || verticalCollided)) {
+    if (!horizontalCollided && !verticalCollided) {
       return result;
     }
 
@@ -61,9 +66,7 @@ class Physics {
         result.colliding = true;
         result.collisions[2] = this.bottom;
       }
-    }
-
-    if (verticalCollided) {
+    } else if (verticalCollided) {
       if (this.left <= physics.right && this.right > physics.right) {
         result.colliding = true;
         result.collisions[3] = this.left;

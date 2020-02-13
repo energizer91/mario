@@ -235,7 +235,12 @@ class Scene {
       }
 
       if (result.collisions[2]) {
-        object.shake();
+        const physicsCenter = this.player.physics.getCenter();
+        const isColliding = object.physics.inBetween(physicsCenter.x, object.physics.left, object.physics.right);
+
+        if (isColliding) {
+          object.shake();
+        }
       }
 
       resultCollision = [
